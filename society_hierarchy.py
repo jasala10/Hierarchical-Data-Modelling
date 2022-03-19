@@ -212,6 +212,19 @@ class Citizen:
         >>> c1.get_superior() is c2
         True
         """
+        if len(self._subordinates) == 0:
+            self._subordinates.append(subordinate)
+
+        else:
+            if self._subordinates[-1].cid < subordinate.cid:
+                self._subordinates.append(subordinate)
+            else:
+                for i in range(len(self._subordinates)):
+                    if self._subordinates[i].cid > subordinate.cid:
+                        self._subordinates.insert(i, subordinate)
+
+        # update subordinate's superior:
+        subordinate._superior = self
 
     def remove_subordinate(self, cid: int) -> None:
         """Remove the subordinate with the ID <cid> from this Citizen's list
