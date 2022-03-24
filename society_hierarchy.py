@@ -246,6 +246,10 @@ class Citizen:
         >>> c1.get_superior() is None
         True
         """
+        for subordinate in self._subordinates:
+            if subordinate.cid == cid:
+                subordinate._superior = None
+                self._subordinates.remove(subordinate)
 
     def become_subordinate_to(self, superior: Optional[Citizen]) -> None:
         """Make this Citizen a direct subordinate of <superior>.
