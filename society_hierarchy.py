@@ -296,6 +296,16 @@ class Citizen:
         True
         """
         # Note: This method must call itself recursively
+        for c in self._subordinates:
+            if c.cid == cid:
+                return c
+
+            sub = c.get_citizen(cid)
+
+            if sub is not None:
+                return sub
+
+        return None
 
     ###########################################################################
     # TODO Task 1.2
