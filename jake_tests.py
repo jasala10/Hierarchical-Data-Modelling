@@ -38,19 +38,6 @@ def test_add_subordinate_03() -> None:
     assert c1._subordinates[1].cid == 10
 
 
-"""
-Remove subordinate:
-
--- one item list, becomes empty
--- two item list where cid at start
--- three item list, cid at end
--- five item list, cid in position 4
-
--- make sure _subordinates has changed appropriately
--- make sure the item's superior is also changed
-"""
-
-
 def test_remove_subordinate_00() -> None:
     c1 = Citizen(1, "Starky Industries", 3024, "Labourer", 50)
     c2 = Citizen(10, "Hookins National Lab", 3024, "Manager", 30)
