@@ -272,6 +272,35 @@ class Citizen:
         >>> c2.get_direct_subordinates()
         []
         """
+        if self._superior is not None:
+            self._superior._subordinates.remove(self)
+        if superior is not None:
+            superior._subordinates.append(self)
+        self._superior = superior
+
+        """
+        if self._superior is not None:
+           self._superior._subordinates.remove(self)
+        if superior is not None:
+            superior._subordinates.append(self)
+        self._superior = superior
+        """
+
+
+        # if superior is None:
+        #     if self._superior is not None:
+        #         self._superior._subordinates.remove(self)
+        #     self._superior = None
+        #
+        # elif isinstance(superior, Citizen):
+        #     if self._superior is not None:
+        #         self._superior._subordinates.remove(self)
+        #     superior._subordinates.append(self)
+        #     self._superior = superior
+
+
+
+
 
     def get_citizen(self, cid: int) -> Optional[Citizen]:
         """Check this Citizen and its subordinates to find and return the

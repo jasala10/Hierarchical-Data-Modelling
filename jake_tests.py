@@ -63,3 +63,31 @@ def test_remove_subordinate_00() -> None:
     c1.remove_subordinate(10)
     assert c1._subordinates == [c3]
     assert c2._superior is None
+
+
+def test_become_subordinate_to_00() -> None:
+    c1 = Citizen(1, "Starky Industries", 3024, "Labourer", 50)
+    c2 = Citizen(2, "Hookins National Lab", 3024, "Manager", 30)
+    c1.become_subordinate_to(c2)
+    assert c1.get_superior().cid == 2
+    assert c2.get_direct_subordinates()[0].cid == 1
+    c1.become_subordinate_to(None)
+    assert c1.get_superior() is None
+    assert c2.get_direct_subordinates() == []
+
+
+def test_become_subordinate_01() -> None:
+    c1 = Citizen(1, "Starky Industries", 3024, "Labourer", 50)
+    c1.become_subordinate_to(None)
+    assert c1._superior is None
+
+
+def test_become_subordinate_02() -> None:
+    c1 = Citizen(1, "Starky Industries", 3024, "Labourer", 50)
+    c2 = Citizen(2, "Hookins National Lab", 3024, "Manager", 30)
+    c3 = Citizen(4, "Hookins National Lab", 3024, "Manager", 30)
+    c1.become_subordinate_to(c3)
+    c1.become_subordinate_to(c2)
+    assert c3._subordinates == []
+    assert c1._superior == c2
+    assert c2._subordinates == [c1]
