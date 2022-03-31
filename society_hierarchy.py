@@ -385,6 +385,48 @@ class Citizen:
         """
         # Note: This method must call itself recursively
 
+        # my approach: make a list with all of self's superiors, another list
+        # with cid's superiors, and then compare to find the closest common
+        # superior
+
+        # INCOMPLETE
+        # Passes two out of three doctests (third gets caught in inf. loop)
+        # Feel free to just rewrite this shit completely if you want ...
+        # whatever is easier lol
+
+        self_list = [self]
+        other_list = [self.get_society_head().get_citizen(cid)]
+        if self.get_society_head().cid == cid:
+            other_list = [self.get_society_head()]
+
+        superior = self.get_superior()
+
+        while superior is not None:
+            self_list.append(superior)
+            superior = self.get_superior()
+
+        other = other_list[0]
+        other_superior = other.get_superior()
+
+        while other_superior is not None:
+            other_list.append(other_superior)
+            other_superior = other_superior.get_superior()
+
+        # sorry for my v convoluted solution... (dkm)
+        check1 = 0
+        check2 = 0
+        for citizen in self_list:
+            if citizen in other_list:
+                check1 = citizen
+                break
+        for citizen in other_list:
+            if citizen in self_list:
+                check2 = citizen
+                break
+
+        assert check1 == check2
+        return check1
+
     ###########################################################################
     # TODO Task 2.2
     ###########################################################################
