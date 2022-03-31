@@ -477,6 +477,14 @@ class Citizen:
         """
         # Hint: This can be used as a helper function for `delete_citizen`
 
+        best = self._subordinates[0]
+
+        for sub in self._subordinates:
+            if best is None or sub.rating > best.rating:
+                best = sub
+
+        return best
+
 
 class Society:
     """A society containing citizens in a hierarchy.

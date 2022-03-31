@@ -170,6 +170,20 @@ def test_district_citizens_branching() -> None:
 
     assert a.get_district_citizens() == [b, d, c, a, e]
 
+# Citizen.get_highest_rated_subordinate
+def test_highest_rating_branching() -> None:
+    a = DistrictLeader(15, "", 0, "", 10, "Florida")
+    b = Citizen(2, "", 0, "", 20)
+    c = Citizen(13, "", 0, "", 40)
+
+    a.add_subordinate(b)
+    a.add_subordinate(c)
+
+    assert a.get_highest_rated_subordinate() == c
+    a.remove_subordinate(13)
+    assert a.get_highest_rated_subordinate() == b
+
+
 if __name__ == "__main__":
     import pytest  # type: ignore
 
