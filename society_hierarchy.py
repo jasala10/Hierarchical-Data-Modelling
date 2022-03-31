@@ -367,6 +367,8 @@ class Citizen:
 
         If this Citizen is the superior of <cid>, return this Citizen.
 
+        Precondition: A citizen with <cid> exists in this heirarchy
+
         >>> c1 = Citizen(1, "Starky Industries", 3024, "Labourer", 50)
         >>> c2 = Citizen(2, "Hookins National Lab", 3024, "Manager", 30)
         >>> c3 = Citizen(3, "S.T.A.R.R.Y Lab", 3010, "Commander", 60)
@@ -384,6 +386,21 @@ class Citizen:
         True
         """
         # Note: This method must call itself recursively
+
+        if self.cid == cid:
+            return self
+
+        # If this Citizen in the superior of <cid>, return this Citizen
+        for sub in self.get_all_subordinates():
+            if sub.cid == cid:
+                return self
+
+        # NOTE: What about where `cid` is the superior of `self`?
+
+        # This check should never fail, otherwise there is a heirarchy without
+        # <cid> in it, which violates the precondition.
+        return self._superior.get_closest_common_superior(cid) # type: ignore
+
 
     ###########################################################################
     # TODO Task 2.2
@@ -405,6 +422,13 @@ class Citizen:
         """
         # Note: This method must call itself recursively
 
+        if isinstance(self, DistrictLeader):
+            return self.get_district_name()
+        elif self._superior is not None:
+            return self._superior.get_district_name()
+        else:
+            return ""
+
     def rename_district(self, district_name: str) -> None:
         """Rename the immediate district which this Citizen is a part of to
         <district_name>.
@@ -422,6 +446,11 @@ class Citizen:
         'District B'
         """
         # Note: This method must call itself recursively
+
+        if isinstance(self, DistrictLeader):
+            self.rename_district(district_name)
+        elif self._superior is not None:
+            self._superior.rename_district(district_name)
 
     ###########################################################################
     # TODO Task 3.2 Helper Method
@@ -708,6 +737,8 @@ class DistrictLeader(Citizen):
         >>> c2.get_district_name()
         'District A'
         """
+        super().__init__(cid, manufacturer, model_year, job, rating)
+        self._district_name = district
 
     def get_district_citizens(self) -> List[Citizen]:
         """Return a list of all citizens in this DistrictLeader's district, in
@@ -725,6 +756,7 @@ class DistrictLeader(Citizen):
         >>> c1.get_district_citizens() == [c1, c2, c3]
         True
         """
+        return merge([self], self.get_all_subordinates())
 
     ###########################################################################
     # TODO Task 2.2
@@ -732,10 +764,12 @@ class DistrictLeader(Citizen):
     def get_district_name(self) -> str:
         """Return the name of the district that this DistrictLeader leads.
         """
+        return self._district_name
 
     def rename_district(self, district_name: str) -> None:
         """Rename this district leader's district to the given <district_name>.
         """
+        self._district_name = district_name
 
 
 ###########################################################################
@@ -863,8 +897,8 @@ if __name__ == "__main__":
     # soc = create_from_file_demo()
     # print(soc)
 
-    # import doctest
-    # doctest.testmod()
+    import doctest
+    doctest.testmod()
     #
     # import python_ta
     # python_ta.check_all(config={
