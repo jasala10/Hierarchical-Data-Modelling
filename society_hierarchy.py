@@ -395,7 +395,8 @@ class Citizen:
             if sub.cid == cid:
                 return self
 
-        # NOTE: What about where `cid` is the superior of `self`?
+        # NOTE: What about where `cid` is the superior of `self`? I think this
+        # violates a precondition but I'm not sure -LK
 
         # This check should never fail, otherwise there is a heirarchy without
         # <cid> in it, which violates the precondition.

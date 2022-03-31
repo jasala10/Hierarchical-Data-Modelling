@@ -112,6 +112,16 @@ def test_common_superior_branching() -> None:
     assert e.get_closest_common_superior(1) == a
     assert e.get_closest_common_superior(13) == b
 
+def test_common_superior_cid_superior() -> None:
+    head = Citizen(1, "", 0, "", 10)
+    cid = Citizen(2, "", 0, "", 10)
+    child = Citizen(3, "", 0, "", 10)
+
+    head.add_subordinate(cid)
+    cid.add_subordinate(child)
+
+    # NOTE: The correct case might be that this `== head`
+    assert child.get_closest_common_superior(2) == cid
 
 # Citizen.get_district_name
 def test_get_set_district_name_branching() -> None:
