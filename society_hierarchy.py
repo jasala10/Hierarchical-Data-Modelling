@@ -550,6 +550,16 @@ class Society:
         # Hint: Recall that self._head is a Citizen object, so any of Citizen's
         # methods can be used as a helper method here.
 
+        # Doctests will fail until Society.add_citizen() is finished
+
+        if self.get_head() is None:
+            return None
+        else:
+            if self.get_head().cid == cid:
+                return self.get_head()
+            else:
+                return self.get_head().get_citizen(cid)
+
     def get_all_citizens(self) -> List[Citizen]:
         """Return a list of all citizens, in order of increasing cid.
 
@@ -569,6 +579,12 @@ class Society:
         >>> o.get_all_citizens() == [c1, c2, c3, c4, c5, c6]
         True
         """
+        # Doctests will fail until Society.add_citizen() is finished
+
+        if self.get_head() is None:
+            return []
+        else:
+            return self.get_head().get_all_subordinates()
 
     def add_citizen(self, citizen: Citizen, superior_id: int = None) -> None:
         """Add <citizen> to this Society as a subordinate of the Citizen with
@@ -599,6 +615,15 @@ class Society:
         >>> c1.get_superior() is c2
         True
         """
+        if superior_id is None:
+            citizen._subordinates = [self.get_head()]
+            self.set_head(citizen)
+        else:
+            # superior_id is not None
+            assert self.get_citizen(superior_id) is not None  # precondition
+            # ↓ this seems right but doesn't work. JL
+            self.get_head().get_citizen(superior_id).add_subordinate(citizen)
+
 
     def get_citizens_with_job(self, job: str) -> List[Citizen]:
         """Return a list of all citizens with the job <job>, in order of
