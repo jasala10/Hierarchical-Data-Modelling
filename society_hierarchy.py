@@ -88,6 +88,7 @@ class Citizen:
     - If _superior is a Citizen, this Citizen is part of its _subordinates list
     - Each Citizen in _subordinates has this Citizen as its _superior
     """
+
     cid: int
     manufacturer: str
     model_year: int
@@ -96,8 +97,9 @@ class Citizen:
     _superior: Optional[Citizen]
     _subordinates: List[Citizen]
 
-    def __init__(self, cid: int, name: str, model_year: int,
-                 job: str, rating: int) -> None:
+    def __init__(
+        self, cid: int, name: str, model_year: int, job: str, rating: int
+    ) -> None:
         """Initialize this Citizen with the ID <cid>, manufacturer
         <manufacturer>, model year <model_year>, job <job>, and rating <rating>.
 
@@ -134,8 +136,7 @@ class Citizen:
         return self.cid < other.cid
 
     def __str__(self) -> str:
-        """Return a string representation of the tree rooted at this Citizen.
-        """
+        """Return a string representation of the tree rooted at this Citizen."""
         return self._str_indented().strip()
 
     def _str_indented(self, depth: int = 0) -> str:
@@ -143,10 +144,10 @@ class Citizen:
 
         The indentation level is specified by the <depth> parameter.
         """
-        me = f'{str(self.cid)} (rating = {self.rating})'
+        me = f"{str(self.cid)} (rating = {self.rating})"
         if isinstance(self, DistrictLeader):
-            me += f' --> District Leader for {self._district_name}'
-        s = '  ' * depth + me + '\n'
+            me += f" --> District Leader for {self._district_name}"
+        s = "  " * depth + me + "\n"
         for subordinate in self.get_direct_subordinates():
             # Note that the ‘depth’ argument to the recursive call is
             # modified.
@@ -400,8 +401,7 @@ class Citizen:
 
         # This check should never fail, otherwise there is a heirarchy without
         # <cid> in it, which violates the precondition.
-        return self._superior.get_closest_common_superior(cid) # type: ignore
-
+        return self._superior.get_closest_common_superior(cid)  # type: ignore
 
     ###########################################################################
     # TODO Task 2.2
@@ -431,7 +431,8 @@ class Citizen:
             return ""
 
     def rename_district(self, district_name: str) -> None:
-        """Rename the immediate district which this Citizen is a part of to
+        """
+        Rename the immediate district which this Citizen is a part of to
         <district_name>.
 
         If the Citizen is not part of a district, do nothing.
@@ -498,6 +499,7 @@ class Society:
     === Representation Invariants ===
     - No two Citizens in this Society have the same cid.
     """
+
     _head: Optional[Citizen]
 
     def __init__(self, head: Optional[Citizen] = None) -> None:
@@ -523,13 +525,11 @@ class Society:
     # You may use the methods below as helper methods if needed.
     ###########################################################################
     def get_head(self) -> Optional[Citizen]:
-        """Return the head of this Society.
-        """
+        """Return the head of this Society."""
         return self._head
 
     def set_head(self, new_head: Citizen) -> None:
-        """Set the head of this Society to <new_head>.
-        """
+        """Set the head of this Society to <new_head>."""
         self._head = new_head
 
     ###########################################################################
@@ -754,13 +754,21 @@ class DistrictLeader(Citizen):
     === Representation Invariants ===
     - All Citizen RIs are inherited.
     """
+
     _district_name: str
 
     ###########################################################################
     # TODO Task 2.1
     ###########################################################################
-    def __init__(self, cid: int, manufacturer: str, model_year: int,
-                 job: str, rating: int, district: str) -> None:
+    def __init__(
+        self,
+        cid: int,
+        manufacturer: str,
+        model_year: int,
+        job: str,
+        rating: int,
+        district: str,
+    ) -> None:
         """Initialize this DistrictLeader with the ID <cid>, manufacturer
         <manufacturer>, model year <model_year>, job <job>, rating <rating>, and
         district name <district>.
@@ -796,12 +804,12 @@ class DistrictLeader(Citizen):
     # TODO Task 2.2
     ###########################################################################
     def get_district_name(self) -> str:
-        """Return the name of the district that this DistrictLeader leads.
-        """
+        """Return the name of the district that this DistrictLeader leads."""
         return self._district_name
 
     def rename_district(self, district_name: str) -> None:
-        """Rename this district leader's district to the given <district_name>.
+        """
+        Rename this district leader's district to the given <district_name>.
         """
         self._district_name = district_name
 
@@ -821,7 +829,7 @@ def create_society_from_file(file: TextIO) -> Society:
     head = None
     people = {}
     for line in file:
-        info: List[Any] = line.strip().split(',')
+        info: List[Any] = line.strip().split(",")
         info[0] = int(info[0])
         info[2] = int(info[2])
         info[4] = int(info[4])
@@ -851,8 +859,7 @@ def create_society_from_file(file: TextIO) -> Society:
 # Sample societies from the handout
 ###########################################################################
 def simple_society_demo() -> Society:
-    """Handout example related to a simple society.
-    """
+    """Handout example related to a simple society."""
     c = Citizen(6, "Starky Industries", 3036, "Commander", 50)
     c2 = Citizen(2, "Hookins National", 3027, "Manager", 55)
     c3 = Citizen(3, "Starky Industries", 3050, "Labourer", 50)
@@ -874,11 +881,9 @@ def simple_society_demo() -> Society:
 
 
 def district_society_demo() -> Society:
-    """Handout example related to a simple society with districts.
-    """
+    """Handout example related to a simple society with districts."""
     c = DistrictLeader(6, "Starky Industries", 3036, "Commander", 50, "Area 52")
-    c2 = DistrictLeader(2, "Hookins National", 3027, "Manager", 55,
-                        "Repair Support")
+    c2 = DistrictLeader(2, "Hookins National", 3027, "Manager", 55, "France")
     c3 = Citizen(3, "Starky Industries", 3050, "Labourer", 50)
     c4 = DistrictLeader(5, "S.T.A.R.R.Y Lab", 3024, "Manager", 17, "Finance")
     c5 = Citizen(8, "Hookins National", 3024, "Cleaner", 74)
@@ -898,8 +903,7 @@ def district_society_demo() -> Society:
 
 
 def promote_citizen_demo() -> Society:
-    """Handout example related to promote_citizen.
-    """
+    """Handout example related to promote_citizen."""
     c = DistrictLeader(6, "Star", 3036, "CFO", 20, "Area 52")
     c2 = DistrictLeader(5, "S.T.A.R.R.Y Lab", 3024, "Manager", 50, "Finance")
     c3 = Citizen(7, "Hookins", 3071, "Labourer", 60)
@@ -917,7 +921,8 @@ def promote_citizen_demo() -> Society:
 
 
 def create_from_file_demo() -> Society:
-    """Handout example related to reading from the provided file citizens.csv.
+    """
+    Handout example related to reading from the provided file citizens.csv.
     """
     return create_society_from_file(open("citizens.csv"))
 
@@ -932,13 +937,23 @@ if __name__ == "__main__":
     # print(soc)
 
     import doctest
+
     doctest.testmod()
-    #
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'allowed-import-modules': ['typing', '__future__',
-    #                                'python_ta', 'doctest'],
-    #     'disable': ['E9998', 'R0201'],
-    #     'max-args': 7,
-    #     'max-module-lines': 1600
-    # })
+
+    """
+    import python_ta  # type: ignore
+
+    python_ta.check_all(
+        config={
+            "allowed-import-modules": [
+                "typing",
+                "__future__",
+                "python_ta",
+                "doctest",
+            ],
+            "disable": ["E9998", "R0201"],
+            "max-args": 7,
+            "max-module-lines": 1600,
+        }
+    )
+    """
