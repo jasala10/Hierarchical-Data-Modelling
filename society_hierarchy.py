@@ -630,12 +630,21 @@ class Society:
         >>> o.get_citizens_with_job('Manager') == [c1, c2, c4]
         True
         """
+        if self._head is None:
+            return []
+
+        all_citizens = merge([self._head], self._head.get_all_subordinates())
+
+        filtered = filter(lambda c: c.job == job, all_citizens)
+
+        return list(filtered)
 
     ###########################################################################
     # TODO Task 2.3
     ###########################################################################
-    def change_citizen_type(self, cid: int,
-                            district_name: Optional[str] = None) -> Citizen:
+    def change_citizen_type(
+        self, cid: int, district_name: Optional[str] = None
+    ) -> Citizen:
         """Change the type of the Citizen with the given <cid>
 
         If the Citizen is currently a DistrictLeader, change them to become a
@@ -657,6 +666,39 @@ class Society:
         Precondition:
         - If <cid> is the id of a DistrictLeader, <district_name> must be None
         """
+        old = self.get_citizen(cid)
+
+        if isinstance(old, DistrictLeader):
+            new = Citizen(
+                old.cid,
+                old.manufacturer,
+                old.model_year,
+                old.job,
+                old.rating,
+            )
+
+        else:
+            assert old is not None and district_name is not None
+
+            new = DistrictLeader(
+                old.cid,
+                old.manufacturer,
+                old.model_year,
+                old.job,
+                old.rating,
+                district_name,
+            )
+
+        # Copy subordinates from old to new
+        for sub in old.get_direct_subordinates():
+            new.add_subordinate(sub)
+
+        # Replace position in heirarchy
+        if superior := old.get_superior():
+            superior.remove_subordinate(cid)
+            superior.add_subordinate(new)
+
+        return new
 
     ###########################################################################
     # TODO Task 3.1
