@@ -213,16 +213,7 @@ class Citizen:
         >>> c1.get_superior() is c2
         True
         """
-        if len(self._subordinates) == 0:
-            self._subordinates.append(subordinate)
-
-        else:
-            if self._subordinates[-1].cid < subordinate.cid:
-                self._subordinates.append(subordinate)
-            else:
-                for i in range(len(self._subordinates)):
-                    if self._subordinates[i].cid > subordinate.cid:
-                        self._subordinates.insert(i, subordinate)
+        self._subordinates = merge([subordinate], self._subordinates)
 
         # update subordinate's superior:
         subordinate._superior = self
@@ -328,11 +319,11 @@ class Citizen:
         2
         """
         # Note: This method must call itself recursively
-
-        subordinates = self._subordinates.copy()
+        subordinates = []
 
         for c in self._subordinates:
-            subordinates = merge(subordinates, c.get_all_subordinates())
+            addition = merge([c], c.get_all_subordinates())
+            subordinates = merge(subordinates, addition)
 
         return subordinates
 
@@ -550,15 +541,12 @@ class Society:
         # Hint: Recall that self._head is a Citizen object, so any of Citizen's
         # methods can be used as a helper method here.
 
-        # Doctests will fail until Society.add_citizen() is finished
-
-        if self.get_head() is None:
+        if self._head is None:
             return None
+        elif self._head.cid == cid:
+            return self._head
         else:
-            if self.get_head().cid == cid:
-                return self.get_head()
-            else:
-                return self.get_head().get_citizen(cid)
+            return self._head.get_citizen(cid)
 
     def get_all_citizens(self) -> List[Citizen]:
         """Return a list of all citizens, in order of increasing cid.
@@ -579,12 +567,10 @@ class Society:
         >>> o.get_all_citizens() == [c1, c2, c3, c4, c5, c6]
         True
         """
-        # Doctests will fail until Society.add_citizen() is finished
-
-        if self.get_head() is None:
+        if self._head is None:
             return []
         else:
-            return self.get_head().get_all_subordinates()
+            return merge([self._head], self._head.get_all_subordinates())
 
     def add_citizen(self, citizen: Citizen, superior_id: int = None) -> None:
         """Add <citizen> to this Society as a subordinate of the Citizen with
@@ -616,14 +602,13 @@ class Society:
         True
         """
         if superior_id is None:
-            citizen._subordinates = [self.get_head()]
+            if head := self._head:
+                citizen.add_subordinate(head)
+
             self.set_head(citizen)
         else:
-            # superior_id is not None
-            assert self.get_citizen(superior_id) is not None  # precondition
-            # ↓ this seems right but doesn't work. JL
-            self.get_head().get_citizen(superior_id).add_subordinate(citizen)
-
+            if superior := self.get_citizen(superior_id):
+                superior.add_subordinate(citizen)
 
     def get_citizens_with_job(self, job: str) -> List[Citizen]:
         """Return a list of all citizens with the job <job>, in order of
