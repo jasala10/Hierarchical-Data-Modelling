@@ -271,6 +271,182 @@ def test_change_citizen_type_branching() -> None:
     assert society.get_all_citizens() == [c2, c3, changed, c, c6, c5, c7]
 
 
+# Society.swap_up
+def test_society_swap_up_simple() -> None:
+    s = Society()
+    head = DistrictLeader(1, "Steve", 10, "PMC", 10, "Rainforest")
+    child = Citizen(2, "Bob", 10, "Useful Worker", 10)
+
+    assert head.get_district_name() == "Rainforest"
+
+    s.add_citizen(head)
+    s.add_citizen(child, 1)
+
+    s._swap_up(child)
+
+    new_head = s.get_head()
+
+    assert new_head is not None
+
+    new_child = new_head.get_all_subordinates()[0]
+
+    assert new_child is not None
+
+    assert new_child.job == "Useful Worker"
+    assert new_head.job == "PMC"
+    assert new_head.get_district_name() == "Rainforest"
+    assert type(new_head) == type(head)
+    assert type(new_child) == type(child)
+
+
+def test_society_swap_up_hierarchy() -> None:
+    s = Society()
+    head = DistrictLeader(1, "Steve", 10, "PMC", 10, "Rainforest")
+    middle = DistrictLeader(2, "Phil", 10, "Middle Manager", 10, "Suburbia")
+    child = Citizen(3, "Bob", 10, "Useful Worker", 10)
+
+    b1 = Citizen(4, "", 10, "Worker", 10)
+    b2 = Citizen(5, "", 10, "Worker", 10)
+    b3 = Citizen(6, "", 10, "Worker", 10)
+    b4 = Citizen(7, "", 10, "Worker", 10)
+    b5 = Citizen(8, "", 10, "Worker", 10)
+
+    assert head.get_district_name() == "Rainforest"
+
+    s.add_citizen(head)
+    s.add_citizen(middle, 1)
+    s.add_citizen(child, 2)
+    s.add_citizen(b1, 2)
+    s.add_citizen(b2, 2)
+    s.add_citizen(b3, 2)
+    s.add_citizen(b4, 2)
+    s.add_citizen(b5, 2)
+
+    assert child.get_superior() == middle
+    assert middle.get_all_subordinates() == [child, b1, b2, b3, b4, b5]
+
+    new_middle = s._swap_up(child)
+
+    assert new_middle is not None
+    assert new_middle.cid == 3
+    assert new_middle.job == middle.job
+    assert new_middle.manufacturer == child.manufacturer
+
+    assert len(new_middle.get_all_subordinates()) == 6
+    new_child = new_middle.get_all_subordinates()[0]
+
+    assert new_child is not None
+
+    assert new_child.job == child.job
+    assert new_child.manufacturer == "Phil"
+
+    assert new_middle.job == "Middle Manager"
+    assert new_middle.get_district_name() == "Suburbia"
+
+    assert type(new_middle) == type(middle)
+    assert type(new_child) == type(child)
+
+    assert new_middle.get_direct_subordinates() == [new_child, b1, b2, b3, b4, b5]
+
+
+# Society.promote_citizen
+def test_promote_citizen_branching() -> None:
+    s = Society()
+    head = DistrictLeader(1, "Steve", 10, "PMC", 10, "Rainforest")
+    middle = DistrictLeader(2, "Phil", 10, "Middle Manager", 10, "Suburbia")
+    child = Citizen(3, "Bob", 10, "Useful Worker", 10)
+
+    b1 = Citizen(4, "", 10, "Worker", 10)
+    b2 = Citizen(5, "", 10, "Worker", 10)
+    b3 = Citizen(6, "", 10, "Worker", 10)
+    b4 = Citizen(7, "", 10, "Worker", 80)
+    b5 = Citizen(8, "Underdog", 10, "Worker", 90)
+
+    s.add_citizen(head)
+    s.add_citizen(middle, 1)
+    s.add_citizen(child, 2)
+    s.add_citizen(b1, 2)
+    s.add_citizen(b2, 4)
+    s.add_citizen(b3, 5)
+    s.add_citizen(b4, 5)
+    s.add_citizen(b5, 6)
+
+    s.promote_citizen(8)
+    s.promote_citizen(7)
+
+    print(s)
+
+    assert len(head.get_direct_subordinates()) == 1
+    new_secondary = head.get_direct_subordinates()[0]
+
+    assert new_secondary.manufacturer == "Underdog"
+
+    seven = s.get_citizen(7)
+
+    assert seven is not None
+    assert not isinstance(seven, DistrictLeader)
+
+    assert new_secondary.get_direct_subordinates() == [child, seven]
+    assert seven.get_direct_subordinates()[0].cid == 2
+
+
+def test_promote_citizen_weird_districtleader_edgecase() -> None:
+    # I assume the higher rated citizen does not move up because he's already a
+    # DistrictLeader. I don't know if this is the proper behaviour, but I
+    # couldn't find anything on piazza discussing it.
+
+    head = Citizen(1, "Steve", 2011, "Job", 10)
+    s = Society(head)
+
+    child = DistrictLeader(2, "Robert", 2011, "Job", 100, "Columbia")
+
+    s.add_citizen(child, 1)
+
+    s.promote_citizen(2)
+
+    same_head = s.get_head()
+
+    assert same_head is not None
+    assert same_head.cid == head.cid
+
+    assert same_head.get_all_subordinates() == [child]
+
+
+# Society.delete_citizen
+def test_society_delete_citizen_branching() -> None:
+    s = Society()
+    head = DistrictLeader(1, "Steve", 10, "PMC", 10, "Rainforest")
+    middle = DistrictLeader(2, "Phil", 10, "Middle Manager", 10, "Suburbia")
+    child = Citizen(3, "Bob", 10, "Useful Worker", 10)
+
+    b1 = Citizen(4, "", 10, "Worker", 20)
+    b2 = Citizen(5, "", 10, "Worker", 10)
+    b3 = Citizen(6, "", 10, "Worker", 10)
+    b4 = Citizen(7, "", 10, "Worker", 80)
+    b5 = Citizen(8, "Underdog", 10, "Worker", 90)
+
+    s.add_citizen(head)
+    s.add_citizen(middle, 1)
+    s.add_citizen(child, 2)
+    s.add_citizen(b1, 2)
+    s.add_citizen(b2, 4)
+    s.add_citizen(b3, 5)
+    s.add_citizen(b4, 3)
+    s.add_citizen(b5, 6)
+
+    s.delete_citizen(3)
+
+    assert middle.get_direct_subordinates() == [b1, b4]
+
+    s.delete_citizen(2)
+
+    assert head.get_direct_subordinates() == [b1, b4]
+
+    s.delete_citizen(1)
+
+    assert s.get_head() == b4
+
+
 if __name__ == "__main__":
     import pytest  # type: ignore
 
