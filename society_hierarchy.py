@@ -346,11 +346,13 @@ class Citizen:
         3
         """
         # Note: This method must call itself recursively
-        # TODO: implement this function with recursion
+
         superior = self.get_superior()
-        while superior is not None and superior.get_superior() is not None:
-            superior = superior.get_superior()
-        return superior or self
+
+        if superior is not None:
+            return superior.get_society_head()
+        else:
+            return self
 
     def get_closest_common_superior(self, cid: int) -> Citizen:
         """Return the closest common superior that this Citizen and the
@@ -762,7 +764,9 @@ class Society:
                 new_superior.add_subordinate(subordinate)
 
         # Citizen shouldn't be in the new_superior's children
-        assert new_superior.get_citizen(citizen.cid) is None
+        # Removed because get_citizen can return self, I thought this wasn't the
+        # case before.
+        # assert new_superior.get_citizen(citizen.cid) is None
 
         (new_subordinate.job, new_superior.job) = (citizen.job, superior.job)
 
