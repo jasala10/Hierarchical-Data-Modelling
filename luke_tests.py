@@ -401,7 +401,6 @@ def test_promote_citizen_weird_districtleader_edgecase() -> None:
     child = DistrictLeader(2, "Robert", 2011, "Job", 100, "Columbia")
 
     s.add_citizen(child, 1)
-
     s.promote_citizen(2)
 
     same_head = s.get_head()

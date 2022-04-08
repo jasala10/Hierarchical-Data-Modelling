@@ -940,6 +940,7 @@ class DistrictLeader(Citizen):
     ###########################################################################
     # T*DO Task 2.2
     ###########################################################################
+
     def get_district_name(self) -> str:
         """Return the name of the district that this DistrictLeader leads."""
         return self._district_name
