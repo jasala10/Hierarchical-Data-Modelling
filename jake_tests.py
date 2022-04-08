@@ -223,4 +223,40 @@ def test_district_00() -> None:
     s.add_citizen(c7, 5)
 
 
+def test_citizen_get_citizen_00() -> None:
+    c1 = Citizen(1, "Starky Industries", 3036, "Commander", 1)
+    c2 = Citizen(2, "Hookins National", 3027, "Manager", 2)
+    c3 = Citizen(3, "Starky Industries", 3050, "Labourer", 50)
+    c4 = Citizen(4, "S.T.A.R.R.Y Lab", 3024, "Manager", 4)
+    c5 = Citizen(5, "Hookins National", 3024, "Cleaner", 74)
+    c6 = Citizen(6, "Hookins National", 3071, "Labourer", 5)
+    c7 = Citizen(7, "S.T.A.R.R.Y Lab", 3098, "Engineer", 86)
+
+    s = Society()
+    s.add_citizen(c1)
+    s.add_citizen(c2, 1)
+    s.add_citizen(c3, 1)
+    s.add_citizen(c4, 2)
+    s.add_citizen(c5, 2)
+    s.add_citizen(c6, 3)
+    s.add_citizen(c7, 3)
+
+    assert c1.get_citizen(1) == c1
+    assert c1.get_citizen(2) == c2
+    assert c1.get_citizen(3) == c3
+    assert c1.get_citizen(4) == c4
+    assert c1.get_citizen(5) == c5
+    assert c1.get_citizen(6) == c6
+    assert c1.get_citizen(7) == c7
+
+    assert c2.get_citizen(1) is None
+    assert c2.get_citizen(2) == c2
+    assert c2.get_citizen(3) is None
+    assert c2.get_citizen(4) == c4
+    assert c2.get_citizen(5) == c5
+    assert c2.get_citizen(6) is None
+    assert c2.get_citizen(7) is None
+
+
+
 ### SAMPLE TREES

@@ -289,6 +289,9 @@ class Citizen:
         """
         # Note: This method must call itself recursively
 
+        if cid == self.cid:
+            return self
+
         for c in self._subordinates:
             if c.cid == cid:
                 return c
@@ -320,11 +323,9 @@ class Citizen:
         """
         # Note: This method must call itself recursively
         subordinates = []
-
         for c in self._subordinates:
             addition = merge([c], c.get_all_subordinates())
             subordinates = merge(subordinates, addition)
-
         return subordinates
 
         # Hints:
@@ -345,12 +346,10 @@ class Citizen:
         3
         """
         # Note: This method must call itself recursively
-
+        # TODO: implement this function with recursion
         superior = self.get_superior()
-
         while superior is not None and superior.get_superior() is not None:
             superior = superior.get_superior()
-
         return superior or self
 
     def get_closest_common_superior(self, cid: int) -> Citizen:
@@ -378,10 +377,8 @@ class Citizen:
         True
         """
         # Note: This method must call itself recursively
-
         if self.cid == cid:
             return self
-
         # If this Citizen in the superior of <cid>, return this Citizen
         for sub in self.get_all_subordinates():
             if sub.cid == cid:
